@@ -3,16 +3,18 @@ from django.db import models
 from users.models import CustomUser
 
 
-# class Page(models.Model):
-#     name = models.CharField(max_length=255)
-#     slug = models.SlugField(max_length=255)
-#     bio = models.TextField()
-#     picture = models.ImageField(upload_to='page/picture')
-#     is_organization = models.BooleanField(default=False)
-#     wide_picture = models.ImageField(upload_to='page/wide_picture/', null=True, blank=True)
-#     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='page_author')
-#     created_at = models.DateTimeField(auto_now=True)
-#     updated_at = models.DateTimeField(auto_now_add=True)
+class Page(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255)
+    bio = models.TextField()
+    picture = models.ImageField(upload_to='page/picture')
+    is_organization = models.BooleanField(default=False)
+    wide_picture = models.ImageField(upload_to='page/wide_picture/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    followed = models.BooleanField(default=False)
+    followers_count = models.IntegerField(default=0)
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='page_author')
 
 
 class Post(models.Model):
