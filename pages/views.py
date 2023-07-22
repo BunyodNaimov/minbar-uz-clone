@@ -51,21 +51,17 @@ class PostLikeDislikeAPIView(CreateAPIView):
             value = serializer.validated_data['value']
             try:
                 like = PostLike.objects.get(user=user, post_id=post_id)
-                if like.value == value:
-                    # Если пользователь нажал на кнопку лайка или дизлайка дважды, то снимаем свой голос
-                    if value == 1:
-                        like.post.likes -= 1
-                    else:
-                        like.post.dislikes -= 1
+                if like.value == 1:
+                    # Если пользователь нажал на кнопку лайка дважды, то мы отменяем свой голос
+                    like.post.likes -= 1
+                    like.value = 0
+                    like.post.save()
                     like.delete()
                 else:
-                    # Если пользователь изменил свой голос, то сначала снимаем старый голос
-                    if like.value == 1:
-                        like.post.likes -= 1
-                    else:
-                        like.post.dislikes -= 1
+                    # Если пользователь изменил свой голос, то мы сначала снимаем старый голос
+                    like.post.likes -= 1
                     # Затем добавляем новый голос
-                    like.value = value
+                    like.value = 1
                     like.post.save()
                     like.save()
             except PostLike.DoesNotExist:
