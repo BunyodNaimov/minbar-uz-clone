@@ -2,19 +2,16 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 
 from bookmarks.models import Bookmark
-from bookmarks.serializers import BookmarkSerializer
+from bookmarks.serializers import BookmarkSerializer, BookmarkGetSerializer
 from pages.models import Post
 
 
-class BookmarkCreateAPIView(generics.ListCreateAPIView):
+class BookmarkCreateAPIView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = BookmarkSerializer
 
-    def get_queryset(self):
-        return Bookmark.objects.filter(user=self.request.user)
-
     def post(self, request, *args, **kwargs):
-        post_id = kwargs.get('pk')
+        post_id = request.data.get('post')
         try:
             post = Post.objects.get(id=post_id)
         except Post.DoesNotExist:
@@ -25,18 +22,28 @@ class BookmarkCreateAPIView(generics.ListCreateAPIView):
         return Response({'success': 'Bookmark created successfully.'}, status=status.HTTP_201_CREATED)
 
 
+class BookmarkListAPIView(generics.ListAPIView):
+    serializer_class = BookmarkSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        return Bookmark.objects.filter(user=self.request.user)
+
+
 class BookmarkDeleteAPIView(generics.RetrieveDestroyAPIView):
     queryset = Bookmark.objects.all()
-    serializer_class = BookmarkSerializer
+    serializer_class = BookmarkGetSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self):
         queryset = self.get_queryset()
-        obj = generics.get_object_or_404(queryset, user=self.request.user, id=self.kwargs.get(self.lookup_url_kwarg))
+        post_id = self.kwargs.get('pk')
+
+        obj = generics.get_object_or_404(queryset, user=self.request.user, id=post_id)
         return obj
 
     def delete(self, request, *args, **kwargs):
-        post_id = kwargs.get('pk')
+        post_id = self.kwargs.get('pk')
         try:
             bookmark = Bookmark.objects.get(user=request.user, post_id=post_id)
         except Bookmark.DoesNotExist:

@@ -1,7 +1,7 @@
 from django.urls import path
 
 from pages.views import PageListAPIVew, PostListCreateAPIView, UninterestingPagesList, MarkPageUninterested, \
-    UnmarkPageUninteresting, PostLikeAPIView
+    UnmarkPageUninteresting, PostLikeAPIView, CommentListCreateAPIView
 
 urlpatterns = [
     path('', PageListAPIVew.as_view(), name='page_list'),
@@ -10,4 +10,5 @@ urlpatterns = [
     path('<int:pk>/unblock/', UnmarkPageUninteresting.as_view(), name='unblocked-page'),
     path('posts/', PostListCreateAPIView.as_view(), name='post-list-create'),
     path('posts/<int:post_id>/like-dislike/', PostLikeAPIView.as_view(), name='post-like-dislike'),
+    path('posts/<int:post_id>/comments/', CommentListCreateAPIView.as_view(), name='comment-list-create'),
 ]

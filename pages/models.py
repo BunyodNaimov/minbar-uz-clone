@@ -69,3 +69,10 @@ class PostLike(models.Model):
 
     class Meta:
         unique_together = ('user', 'post')
+
+
+class Comment(models.Model):
+    text = models.TextField()
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    created_at = models.DateTimeField(auto_now_add=True)

@@ -5,9 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from pages.models import Page, Post, PageInteraction, PostLike
+from pages.models import Page, Post, PageInteraction, PostLike, Comment
 from pages.serializers import PageSerializer, PostSerializer, BlockedPageSerializer, PostCreateSerializer, \
-    PostLikeSerializer
+    PostLikeSerializer, CommentSerializer
 
 
 class PageListAPIVew(ListAPIView):
@@ -131,3 +131,19 @@ class UninterestingPagesList(ListAPIView):
         queryset = PageInteraction.objects.filter(user_id=user_id, is_uninteresting=True).values_list('page_id',
                                                                                                       flat=True)
         return Page.objects.filter(id__in=queryset)
+
+
+class CommentListCreateAPIView(ListCreateAPIView):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        post_id = self.kwargs.get('post_id')
+        return Comment.objects.filter(post__id=post_id)
+
+    def post(self, request, post_id):  # noqa
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            post = Post.objects.get(id=post_id)
+            serializer.save(author=request.user, post=post)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
