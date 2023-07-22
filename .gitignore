@@ -7,6 +7,10 @@ __pycache__/
 *.so
 
 .idea
+users/migrations
+bookmarks/migrations
+categories/migrations
+pages/migrations
 
 # Distribution / packaging
 .Python
