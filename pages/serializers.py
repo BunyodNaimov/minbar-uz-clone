@@ -21,7 +21,7 @@ class PositionSerializer(serializers.ModelSerializer):
 
 
 class PostAuthorSerializer(serializers.ModelSerializer):
-    position = PositionSerializer(read_only=True)
+    position = PositionSerializer(read_only=True, many=True)
 
     class Meta:
         model = Page
