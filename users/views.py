@@ -35,8 +35,10 @@ class UserLoginView(generics.GenericAPIView):
             password=serializer.validated_data['password']
         )
         if user:
-            refresh = RefreshToken.for_user(user)
-            return Response({"access_token": str(refresh.access_token)})
+            token = RefreshToken.for_user(user)
+            data = serializer.data
+            data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
+            return Response(data, status=status.HTTP_200_OK)
         else:
             return Response(
                 {"error": "Incorrect username or password"},
