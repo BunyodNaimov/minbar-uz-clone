@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from pages.models import Page, Post, PageInteraction, PostLike
+from pages.models import Page, Post, PageInteraction, PostLike, Position
 from users.models import CustomUser
 
 
@@ -13,7 +13,16 @@ class PageSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'picture', 'followers_count', 'followed')
 
 
+class PositionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ('id', 'name')
+        read_only_fields = ('id',)
+
+
 class PostAuthorSerializer(serializers.ModelSerializer):
+    position = PositionSerializer(read_only=True)
+
     class Meta:
         model = Page
         fields = ('id', 'name', 'position')
