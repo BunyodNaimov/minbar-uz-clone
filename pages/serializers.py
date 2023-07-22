@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
-from pages.models import Page, Post, PageInteraction, PostLike, Position
+from categories.models import Category
+from categories.serializers import CategorySerializer
+from pages.models import Page, Post, PageInteraction, Position, PostLike
 from users.models import CustomUser
 
 
@@ -29,21 +31,24 @@ class PostAuthorSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
+class PostLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostLike
+        fields = ('id', 'post', 'value')
+
+
 class PostSerializer(serializers.ModelSerializer):
     author = PostAuthorSerializer(read_only=True)
+    categories = CategorySerializer(read_only=True, many=True)
     likes = serializers.IntegerField(read_only=True)
     dislikes = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'slug', 'description', 'image', 'author', 'views', 'visible', 'likes', 'dislikes')
+        fields = (
+            'id', 'title', 'slug', 'image', 'description', 'views', 'visible', 'allow_comments', 'publish_date',
+            'likes', 'dislikes', 'categories', 'author')
         read_only_fields = ('id',)
-
-
-class PostLikeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PostLike
-        fields = ('id', 'post', 'value')
 
 
 class PostCreateSerializer(serializers.ModelSerializer):

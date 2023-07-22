@@ -5,6 +5,6 @@ from bookmarks.views import BookmarkCreateAPIView, BookmarkDeleteAPIView
 app_name = 'bookmarks'
 
 urlpatterns = [
-    path('', BookmarkCreateAPIView.as_view(), name='bookmarks-create'),
-    path('<int:pk>/', BookmarkDeleteAPIView.as_view(), name='bookmarks-delete'),
+    path('', BookmarkCreateAPIView.as_view(), name='bookmark-create'),
+    path('<int:pk>/', BookmarkDeleteAPIView.as_view(), name='bookmark-delete'),
 ]

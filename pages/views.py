@@ -39,39 +39,56 @@ class PostListCreateAPIView(ListCreateAPIView):
         return Post.objects.exclude(author_id__in=uninteresting_pages)
 
 
-class PostLikeDislikeAPIView(CreateAPIView):
+class PostLikeAPIView(CreateAPIView):
     serializer_class = PostLikeSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            user = request.user
-            post_id = serializer.validated_data['post'].id
-            value = serializer.validated_data['value']
-            try:
-                like = PostLike.objects.get(user=user, post_id=post_id)
-                if like.value == 1:
-                    # Если пользователь нажал на кнопку лайка дважды, то мы отменяем свой голос
-                    like.post.likes -= 1
-                    like.value = 0
-                    like.post.save()
-                    like.delete()
-                else:
-                    # Если пользователь изменил свой голос, то мы сначала снимаем старый голос
-                    like.post.likes -= 1
-                    # Затем добавляем новый голос
-                    like.value = 1
-                    like.post.save()
-                    like.save()
-            except PostLike.DoesNotExist:
-                serializer.save(user=user)
-                post = serializer.validated_data['post']
-                if value == 1:
-                    post.likes += 1
-                else:
-                    post.dislikes += 1
-                post.save()
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user = request.user
+        post = serializer.validated_data.get('post')
+        if not post:
+            return Response({'error': 'Post object not found'}, status=status.HTTP_400_BAD_REQUEST)
+        if post.author == user:
+            return Response({'error': 'You cannot like or dislike your own post'}, status=status.HTTP_400_BAD_REQUEST)
+        value = serializer.validated_data.get('value')
+        try:
+            like = PostLike.objects.get(user=user, post=post)
+            if like.value == 1 and value == -1:
+                # Если пользователь нажал на кнопку дизлайка, а потом на кнопку лайка, то мы убираем лайк и добавляем дизлайк
+                like.post.likes -= 1
+                like.post.dislikes += 1
+                like.value = -1
+                like.post.save()
+                like.save()
+            elif like.value == -1 and value == 1:
+                # Если пользователь нажал на кнопку лайка, а потом на кнопку дизлайка, то мы убираем дизлайк и добавляем лайк
+                like.post.dislikes -= 1
+                like.post.likes += 1
+                like.value = 1
+                like.post.save()
+                like.save()
+            elif like.value == 1 and value == 1:
+                # Если пользователь нажал на кнопку лайка дважды, то мы отменяем свой голос
+                like.post.likes -= 1
+                like.value = 0
+                like.post.save()
+                like.delete()
+            elif like.value == -1 and value == -1:
+                # Если пользователь нажал на кнопку дизлайка дважды, то мы отменяем свой голос
+                like.post.dislikes -= 1
+                like.value = 0
+                like.post.save()
+                like.delete()
+        except PostLike.DoesNotExist:
+            serializer.save(user=user)
+            if value == 1:
+                post.likes += 1
+            elif value == -1:
+                post.dislikes += 1
+            post.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

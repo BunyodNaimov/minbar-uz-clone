@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from categories.models import Category
@@ -31,6 +33,16 @@ class Page(models.Model):
         return self.name
 
 
+class PageInteraction(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_interaction')
+    page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='page_interaction')
+    is_uninteresting = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'page')
+
+
 class Post(models.Model):
     title = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(max_length=255, unique=True)
@@ -47,16 +59,6 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
-
-
-class PageInteraction(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_interaction')
-    page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='page_interaction')
-    is_uninteresting = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ('user', 'page')
 
 
 class PostLike(models.Model):
