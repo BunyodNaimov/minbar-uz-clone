@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'users',
     'categories',
     'pages',
-    'bookmark',
+    'bookmarks',
 ]
 
 MIDDLEWARE = [

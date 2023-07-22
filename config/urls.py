@@ -48,7 +48,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('categories/', include('categories.urls')),
     path('pages/', include('pages.urls')),
-    path('bookmarks/', include('bookmark.urls')),
+    path('bookmarks/', include('bookmarks.urls')),
 ]
 
 urlpatterns += swagger_urls

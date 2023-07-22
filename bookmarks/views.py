@@ -1,8 +1,8 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 
-from bookmark.models import Bookmark
-from bookmark.serializers import BookmarkSerializer
+from bookmarks.models import Bookmark
+from bookmarks.serializers import BookmarkSerializer
 from pages.models import Post
 
 

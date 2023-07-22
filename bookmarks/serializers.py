@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from bookmark.models import Bookmark
+from bookmarks.models import Bookmark
 from pages.serializers import PostSerializer
 
 
