@@ -52,15 +52,22 @@ class PostLikeDislikeAPIView(CreateAPIView):
             try:
                 like = PostLike.objects.get(user=user, post_id=post_id)
                 if like.value == value:
-                    return Response({'detail': 'You have already voted this'}, status=status.HTTP_400_BAD_REQUEST)
-                if like.value == 1:
-                    like.post.likes -= 1
+                    # Если пользователь нажал на кнопку лайка или дизлайка дважды, то снимаем свой голос
+                    if value == 1:
+                        like.post.likes -= 1
+                    else:
+                        like.post.dislikes -= 1
+                    like.delete()
                 else:
-                    like.post.dislikes -= 1
-                like.value = value
-                like.post.save()
-                like.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                    # Если пользователь изменил свой голос, то сначала снимаем старый голос
+                    if like.value == 1:
+                        like.post.likes -= 1
+                    else:
+                        like.post.dislikes -= 1
+                    # Затем добавляем новый голос
+                    like.value = value
+                    like.post.save()
+                    like.save()
             except PostLike.DoesNotExist:
                 serializer.save(user=user)
                 post = serializer.validated_data['post']
@@ -69,8 +76,7 @@ class PostLikeDislikeAPIView(CreateAPIView):
                 else:
                     post.dislikes += 1
                 post.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class MarkPageUninterested(APIView):
