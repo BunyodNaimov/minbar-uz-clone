@@ -1,13 +1,13 @@
-from django.shortcuts import render
 from rest_framework import status, permissions
 from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from pages.models import Page, Post, PageInteraction, PostLike, Comment
+from pages.models import Page, Post, PageInteraction, PostLike, Comment, CommentLike
 from pages.serializers import PageSerializer, PostSerializer, BlockedPageSerializer, PostCreateSerializer, \
-    PostLikeSerializer, CommentSerializer
+    PostLikeSerializer, CommentSerializer, CommentLikeSerializer
+from pages.utils import CommentLikeView
 
 
 class PageListAPIVew(ListAPIView):
@@ -40,56 +40,11 @@ class PostListCreateAPIView(ListCreateAPIView):
 
 
 class PostLikeAPIView(CreateAPIView):
-    serializer_class = PostLikeSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        user = request.user
-        post = serializer.validated_data.get('post')
-        if not post:
-            return Response({'error': 'Post object not found'}, status=status.HTTP_400_BAD_REQUEST)
-        if post.author == user:
-            return Response({'error': 'You cannot like or dislike your own post'}, status=status.HTTP_400_BAD_REQUEST)
-        value = serializer.validated_data.get('value')
-        try:
-            like = PostLike.objects.get(user=user, post=post)
-            if like.value == 1 and value == -1:
-                # Если пользователь нажал на кнопку дизлайка, а потом на кнопку лайка, то мы убираем лайк и добавляем дизлайк
-                like.post.likes -= 1
-                like.post.dislikes += 1
-                like.value = -1
-                like.post.save()
-                like.save()
-            elif like.value == -1 and value == 1:
-                # Если пользователь нажал на кнопку лайка, а потом на кнопку дизлайка, то мы убираем дизлайк и добавляем лайк
-                like.post.dislikes -= 1
-                like.post.likes += 1
-                like.value = 1
-                like.post.save()
-                like.save()
-            elif like.value == 1 and value == 1:
-                # Если пользователь нажал на кнопку лайка дважды, то мы отменяем свой голос
-                like.post.likes -= 1
-                like.value = 0
-                like.post.save()
-                like.delete()
-            elif like.value == -1 and value == -1:
-                # Если пользователь нажал на кнопку дизлайка дважды, то мы отменяем свой голос
-                like.post.dislikes -= 1
-                like.value = 0
-                like.post.save()
-                like.delete()
-        except PostLike.DoesNotExist:
-            serializer.save(user=user)
-            if value == 1:
-                post.likes += 1
-            elif value == -1:
-                post.dislikes += 1
-            post.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class CommentLikeAPIView(CommentLikeView):
+    permission_classes = [IsAuthenticated]
 
 
 class MarkPageUninterested(APIView):

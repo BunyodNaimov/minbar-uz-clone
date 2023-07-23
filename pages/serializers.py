@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from categories.serializers import CategorySerializer
-from pages.models import Page, Post, PageInteraction, Position, PostLike, Comment
+from pages.models import Page, Post, PageInteraction, Position, PostLike, Comment, CommentLike
 from users.serializers import UserSerializer
 
 
@@ -19,8 +19,14 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'text', 'author', 'post')
+        fields = ('id', 'text', 'author', 'post', 'likes', 'dislikes')
         read_only_fields = ('id', 'author', 'post')
+
+
+class CommentLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommentLike
+        fields = ('id', 'post', 'comment', 'value')
 
 
 class PositionSerializer(serializers.ModelSerializer):

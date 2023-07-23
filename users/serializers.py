@@ -4,6 +4,8 @@ from users.models import CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(read_only=True)
+
     class Meta:
         model = CustomUser
         fields = ('first_name', 'last_name', 'email', 'username', 'password')
@@ -20,4 +22,3 @@ class UserLoginSerializer(serializers.Serializer):
         if username and password:
             return attrs
         raise serializers.ValidationError('Username and password are required')
-
