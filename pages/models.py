@@ -59,6 +59,7 @@ class Post(models.Model):
     publish_date = models.DateField(auto_now=True)
     likes = models.PositiveIntegerField(default=0)
     dislikes = models.PositiveIntegerField(default=0)
+    comments_count = models.PositiveIntegerField(default=0)
     categories = models.ManyToManyField(Category, related_name='categories_post')
     author = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='author_post')
 
@@ -82,8 +83,9 @@ class Comment(models.Model):
     dislikes = models.PositiveIntegerField(default=0)
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    comments_count = models.PositiveIntegerField(default=0)
+
     created_at = models.DateTimeField(auto_now_add=True)
+
 
 class CommentLike(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
