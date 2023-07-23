@@ -25,10 +25,14 @@ class Page(models.Model):
     wide_picture = models.ImageField(upload_to='page/wide_picture/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)
-    followed = models.BooleanField(default=False)
-    followers_count = models.IntegerField(default=0)
+    followers = models.ManyToManyField(CustomUser, related_name='followed_pages')
+    followers_count = models.PositiveIntegerField(default=0)
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='page_author')
     position = models.ManyToManyField(Position, related_name='page_position')
+
+    @property
+    def followers_count(self):
+        return self.followers.count()
 
     def __str__(self):
         return self.name
@@ -78,8 +82,8 @@ class Comment(models.Model):
     dislikes = models.PositiveIntegerField(default=0)
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    comments_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
-
 
 class CommentLike(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

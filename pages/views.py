@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
 from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -102,3 +103,21 @@ class CommentListCreateAPIView(ListCreateAPIView):
             serializer.save(author=request.user, post=post)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PageFollow(APIView):
+    def post(self, request, page_id):
+        page = get_object_or_404(Page, pk=page_id)
+        user = request.user
+        page.followers.add(user)
+        page.save()
+        return Response({'message': 'successful '}, status=status.HTTP_200_OK)
+
+
+class PageUnfollow(APIView):
+    def post(self, request, page_id):
+        page = get_object_or_404(Page, pk=page_id)
+        user = request.user
+        page.followers.remove(user)
+        page.save()
+        return Response({'message': 'successful '}, status=status.HTTP_200_OK)

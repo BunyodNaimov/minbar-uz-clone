@@ -1,11 +1,13 @@
 from django.urls import path
 
 from pages.views import PageListAPIVew, PostListCreateAPIView, UninterestingPagesList, MarkPageUninterested, \
-    UnmarkPageUninteresting, CommentListCreateAPIView, PostLikeAPIView, CommentLikeAPIView
+    UnmarkPageUninteresting, CommentListCreateAPIView, PostLikeAPIView, CommentLikeAPIView, PageFollow, PageUnfollow
 
 urlpatterns = [
     path('', PageListAPIVew.as_view(), name='page_list'),
     path('blocked/', UninterestingPagesList.as_view(), name='blocked-page-list'),
+    path('<int:page_id>/follow/', PageFollow.as_view(), name='page_follow'),
+    path('<int:page_id>/unfollow/', PageUnfollow.as_view(), name='page_unfollow'),
     path('posts/<int:pk>/block/', MarkPageUninterested.as_view(), name='block-page'),
     path('posts/<int:pk>/unblock/', UnmarkPageUninteresting.as_view(), name='unblocked-page'),
     path('posts/', PostListCreateAPIView.as_view(), name='post-list-create'),

@@ -6,12 +6,14 @@ from users.serializers import UserSerializer
 
 
 class PageSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True).fields.get('username')
+
     class Meta:
         model = Page
         fields = (
-            'id', 'name', 'slug', 'picture', 'author', 'is_organization', 'followers_count', 'followed'
+            'id', 'name', 'slug', 'picture', 'author', 'is_organization', 'followers', 'followers_count',
         )
-        read_only_fields = ('id', 'picture', 'followers_count', 'followed')
+        read_only_fields = ('id', 'picture', 'followers_count', 'followers')
 
 
 class CommentSerializer(serializers.ModelSerializer):
