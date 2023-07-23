@@ -1,14 +1,14 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
-from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from pages.models import Page, Post, PageInteraction, PostLike, Comment, CommentLike
 from pages.serializers import PageSerializer, PostSerializer, BlockedPageSerializer, PostCreateSerializer, \
-    PostLikeSerializer, CommentSerializer, CommentLikeSerializer
-from pages.utils import CommentLikeView
+    PostLikeSerializer, CommentSerializer, CommentLikeSerializer, PageDetailSerializer
+from pages.utils import CommentLikeView, PostLikeView
 
 
 class PageListAPIVew(ListAPIView):
@@ -16,6 +16,11 @@ class PageListAPIVew(ListAPIView):
 
     def get_queryset(self):
         return Page.objects.exclude(page_interaction__user=self.request.user)
+
+
+class PageDetailView(RetrieveUpdateAPIView):
+    queryset = Page.objects.all()
+    serializer_class = PageDetailSerializer
 
 
 class PostListCreateAPIView(ListCreateAPIView):
@@ -40,7 +45,7 @@ class PostListCreateAPIView(ListCreateAPIView):
         return Post.objects.exclude(author_id__in=uninteresting_pages)
 
 
-class PostLikeAPIView(CreateAPIView):
+class PostLikeAPIView(PostLikeView):
     permission_classes = (permissions.IsAuthenticated,)
 
 

@@ -80,3 +80,14 @@ class BlockedPageSerializer(serializers.ModelSerializer):
         model = PageInteraction
         fields = ('id', 'user', 'page')
         read_only_fields = ('id',)
+
+
+class PageDetailSerializer(serializers.ModelSerializer):
+    page_posts = PostSerializer(many=True)
+
+    class Meta:
+        model = Page
+        fields = (
+            'id', 'name', 'slug', 'bio', 'picture', 'is_organization', 'wide_picture', 'position', 'page_posts'
+        )
+

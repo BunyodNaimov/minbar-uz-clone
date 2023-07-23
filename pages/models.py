@@ -60,7 +60,7 @@ class Post(models.Model):
     dislikes = models.PositiveIntegerField(default=0)
     comments_count = models.PositiveIntegerField(default=0)
     categories = models.ManyToManyField(Category, related_name='categories_post')
-    author = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='author_post')
+    author = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='page_posts')
 
     def comments_count(self):
         return self.comments.count()
