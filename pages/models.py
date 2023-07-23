@@ -30,7 +30,6 @@ class Page(models.Model):
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='page_author')
     position = models.ManyToManyField(Position, related_name='page_position')
 
-    @property
     def followers_count(self):
         return self.followers.count()
 
@@ -62,6 +61,9 @@ class Post(models.Model):
     comments_count = models.PositiveIntegerField(default=0)
     categories = models.ManyToManyField(Category, related_name='categories_post')
     author = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='author_post')
+
+    def comments_count(self):
+        return self.comments.count()
 
     def __str__(self):
         return self.title
