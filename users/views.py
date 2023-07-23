@@ -1,10 +1,12 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 from rest_framework import generics, status
+from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.serializers import UserSerializer, UserLoginSerializer
+from users.serializers import UserSerializer, UserLoginSerializer, UserProfileSerializer
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -44,3 +46,11 @@ class UserLoginView(generics.GenericAPIView):
                 {"error": "Incorrect username or password"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+
+class UserProfileAPIView(RetrieveUpdateAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user

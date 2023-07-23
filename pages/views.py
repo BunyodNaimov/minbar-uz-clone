@@ -45,8 +45,14 @@ class PostListCreateAPIView(ListCreateAPIView):
         return Post.objects.exclude(author_id__in=uninteresting_pages)
 
 
+class PostDetailView(RetrieveUpdateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+
 class PostLikeAPIView(PostLikeView):
     permission_classes = (permissions.IsAuthenticated,)
+    queryset = Post.objects.all()
 
 
 class CommentLikeAPIView(CommentLikeView):

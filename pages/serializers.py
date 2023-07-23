@@ -65,14 +65,14 @@ class PostSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'title', 'slug', 'image', 'description', 'views', 'visible', 'allow_comments', 'publish_date',
             'likes', 'dislikes', 'categories', 'author', 'comments', 'comments_count')
-        read_only_fields = ('id',)
+        read_only_fields = ('id', )
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'title', 'slug', 'description', 'image', 'author', 'views', 'visible')
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'author', 'views', 'visible')
 
 
 class BlockedPageSerializer(serializers.ModelSerializer):
