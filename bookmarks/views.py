@@ -2,13 +2,13 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 
 from bookmarks.models import Bookmark
-from bookmarks.serializers import BookmarkSerializer, BookmarkGetSerializer
+from bookmarks.serializers import BookmarkSerializer, BookmarkCreateSerializer
 from pages.models import Post
 
 
 class BookmarkCreateAPIView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = BookmarkGetSerializer
+    serializer_class = BookmarkCreateSerializer
 
     def post(self, request, *args, **kwargs):
         post_id = request.data.get('post')
@@ -32,7 +32,7 @@ class BookmarkListAPIView(generics.ListAPIView):
 
 class BookmarkDeleteAPIView(generics.RetrieveDestroyAPIView):
     queryset = Bookmark.objects.all()
-    serializer_class = BookmarkGetSerializer
+    serializer_class = BookmarkCreateSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self):
