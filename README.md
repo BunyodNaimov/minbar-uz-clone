@@ -1,4 +1,4 @@
-## Добро пожаловать в проект Minbar-uz-clone этот проект является копией сайта [minbar.uz](https://www.minbar.uz/)
+## Добро пожаловать в проект Minbar-uz-clone [Minbar-uz-clone](https://bunyodadmin.pythonanywhere.com/swagger/) этот проект является копией сайта [minbar.uz](https://www.minbar.uz/)
 
 
 
