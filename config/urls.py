@@ -23,6 +23,8 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+from pages.views import SearchView
+
 schema_view = get_schema_view(
     openapi.Info(
         title="Minbar-uz by BunyodNaimov",
@@ -49,6 +51,7 @@ urlpatterns = [
     path('categories/', include('categories.urls')),
     path('pages/', include('pages.urls')),
     path('bookmarks/', include('bookmarks.urls')),
+    path('search/', SearchView.as_view()),
 ]
 
 urlpatterns += swagger_urls

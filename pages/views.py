@@ -1,14 +1,19 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import status, permissions
-from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView, RetrieveUpdateAPIView
+from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Q
+from rest_framework import status, permissions, filters
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from pages.models import Page, Post, PageInteraction, PostLike, Comment, CommentLike
+from categories.serializers import CategorySerializer
+from pages.models import Page, Post, PageInteraction, Comment
 from pages.serializers import PageSerializer, PostSerializer, BlockedPageSerializer, PostCreateSerializer, \
-    PostLikeSerializer, CommentSerializer, CommentLikeSerializer, PageDetailSerializer
+    CommentSerializer, PageDetailSerializer
 from pages.utils import CommentLikeView, PostLikeView
+from pagination import CustomPageNumberPagination
 
 
 class PageListAPIVew(ListAPIView):
@@ -22,9 +27,21 @@ class PageDetailView(RetrieveUpdateAPIView):
     queryset = Page.objects.all()
     serializer_class = PageDetailSerializer
 
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filter_fields = ('position',)
+    search_fields = ('title', 'description', 'position')
+    ordering_fields = ('position', 'created_at')
+    pagination_class = CustomPageNumberPagination
+
 
 class PostListCreateAPIView(ListCreateAPIView):
     serializer_class = PostSerializer
+
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filter_fields = ('category',)
+    search_fields = ('title', 'description', 'categories')
+    ordering_fields = ('categories', 'created_at')
+    pagination_class = CustomPageNumberPagination
 
     def get_serializer_class(self):
         if self.request.method in ['POST']:
@@ -132,3 +149,10 @@ class PageUnfollow(APIView):
         page.followers.remove(user)
         page.save()
         return Response({'message': 'successful '}, status=status.HTTP_200_OK)
+
+
+class SearchView(ListAPIView):
+    filter_backends = (filters.SearchFilter,)
+    search_backends = ('title', 'page__name', 'body', 'position__name', 'category__name')
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer

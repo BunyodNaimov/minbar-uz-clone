@@ -1,7 +1,5 @@
-from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models.fields import related
 
 from categories.models import Category
 from users.models import CustomUser

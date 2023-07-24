@@ -5,6 +5,7 @@ from pages.views import PageListAPIVew, PostListCreateAPIView, UninterestingPage
     PageDetailView, PostDetailView
 
 urlpatterns = [
+
     path('', PageListAPIVew.as_view(), name='page_list'),
     path('<int:pk>/', PageDetailView.as_view(), name='page_detail'),
     path('blocked/', UninterestingPagesList.as_view(), name='blocked-page-list'),
