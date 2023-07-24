@@ -1,1 +1,1 @@
-# minbar-uz-clone
+# Добро пожаловать в проект Minbar-uz-clone
