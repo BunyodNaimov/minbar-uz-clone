@@ -17,7 +17,7 @@ class Position(models.Model):
 class Page(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255)
-    bio = models.TextField()
+    bio = models.TextField(null=True, blank=True)
     picture = models.ImageField(upload_to='page/picture', null=True, blank=True)
     is_organization = models.BooleanField(default=False)
     wide_picture = models.ImageField(upload_to='page/wide_picture/', null=True, blank=True)
