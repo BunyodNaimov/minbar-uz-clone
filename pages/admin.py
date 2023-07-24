@@ -21,7 +21,7 @@ class PageAdmin(admin.ModelAdmin):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author')
+    list_display = ('title', 'page')
     prepopulated_fields = {
         "slug": ('title',)
     }

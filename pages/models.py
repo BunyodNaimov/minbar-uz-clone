@@ -23,7 +23,7 @@ class Page(models.Model):
     wide_picture = models.ImageField(upload_to='page/wide_picture/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)
-    followers = models.ManyToManyField(CustomUser, related_name='followed_pages')
+    followers = models.ManyToManyField(CustomUser, blank=True, related_name='followed_pages')
     followers_count = models.PositiveIntegerField(default=0)
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='page_author')
     position = models.ManyToManyField(Position, related_name='page_position')
@@ -58,7 +58,7 @@ class Post(models.Model):
     dislikes = models.PositiveIntegerField(default=0)
     comments_count = models.PositiveIntegerField(default=0)
     categories = models.ManyToManyField(Category, related_name='categories_post')
-    author = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='page_posts')
+    page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='page_posts')
 
     def comments_count(self):
         return self.comments.count()

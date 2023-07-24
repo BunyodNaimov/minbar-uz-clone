@@ -54,7 +54,7 @@ class PostLikeSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    author = PostAuthorSerializer(read_only=True)
+    page = PostAuthorSerializer(read_only=True)
     comments = CommentSerializer(read_only=True, many=True)
     categories = CategorySerializer(read_only=True, many=True)
     likes = serializers.IntegerField(read_only=True)
@@ -64,15 +64,15 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = (
             'id', 'title', 'slug', 'image', 'description', 'views', 'visible', 'allow_comments', 'publish_date',
-            'likes', 'dislikes', 'categories', 'author', 'comments', 'comments_count')
+            'likes', 'dislikes', 'categories', 'page', 'comments', 'comments_count')
         read_only_fields = ('id', )
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('id', 'title', 'slug', 'description', 'image', 'author', 'views', 'visible')
-        read_only_fields = ('id', 'author', 'views', 'visible')
+        fields = ('id', 'title', 'slug', 'description', 'image', 'page', 'views', 'visible')
+        read_only_fields = ('id', 'views', 'visible')
 
 
 class BlockedPageSerializer(serializers.ModelSerializer):

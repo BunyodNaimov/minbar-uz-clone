@@ -4,7 +4,7 @@ from django.db.models import Q
 from rest_framework import status, permissions, filters
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -36,12 +36,16 @@ class PageDetailView(RetrieveUpdateAPIView):
 
 class PostListCreateAPIView(ListCreateAPIView):
     serializer_class = PostSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = ('category',)
     search_fields = ('title', 'description', 'categories')
     ordering_fields = ('categories', 'created_at')
     pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        return Post.objects.all()
 
     def get_serializer_class(self):
         if self.request.method in ['POST']:
@@ -50,16 +54,10 @@ class PostListCreateAPIView(ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(author=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def get_queryset(self):
-        user_id = self.request.user.id
-        uninteresting_pages = PageInteraction.objects.filter(user_id=user_id, is_uninteresting=True).values_list(
-            'page_id', flat=True)
-        return Post.objects.exclude(author_id__in=uninteresting_pages)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(page=self.request.user.page_author.first())
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class PostDetailView(RetrieveUpdateAPIView):
