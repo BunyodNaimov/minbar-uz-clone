@@ -12,7 +12,7 @@ class BookmarkSerializer(serializers.ModelSerializer):
         fields = ('id', 'post')
 
 
-class BookmarkGetSerializer(serializers.ModelSerializer):
+class BookmarkCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bookmark
