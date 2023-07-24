@@ -13,8 +13,8 @@ class BookmarkSerializer(serializers.ModelSerializer):
 
 
 class BookmarkGetSerializer(serializers.ModelSerializer):
-    post = PostSerializer(read_only=True)
 
     class Meta:
         model = Bookmark
         fields = ('id', 'post')
+

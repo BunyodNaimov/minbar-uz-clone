@@ -8,7 +8,7 @@ from pages.models import Post
 
 class BookmarkCreateAPIView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = BookmarkSerializer
+    serializer_class = BookmarkGetSerializer
 
     def post(self, request, *args, **kwargs):
         post_id = request.data.get('post')
