@@ -19,7 +19,7 @@ class UserLoginSerializer(serializers.Serializer):
 
         if username and password:
             return attrs
-        raise serializers.ValidationError('Username and password are required')
+        raise serializers.ValidationError("Требуется имя пользователя и пароль")
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
